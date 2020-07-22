@@ -1,9 +1,11 @@
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 
 const indexRouter = require('./routes/index');
 
 const app = express();
+app.use(cors());
 
 const randomRouter = require("./routes/random");
 app.use('/', indexRouter);
