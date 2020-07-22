@@ -1,3 +1,0 @@
-[submodule "public/data/words"]
-	path = public/data/words
-	url = https://github.com/dulldesk/words.git

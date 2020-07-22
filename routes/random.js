@@ -36,16 +36,18 @@ exports.genLetterOfType = async function(req, res) {
 		.catch(err => res.send("An error occured "+err));
 };
 
+const axios = require('axios');
+
 async function getWordStartingWith(letter, type) {
 	return new Promise((resolve, reject) => {
-		fs.readFile(`public/data/words/${type}/${letter}-min.json`, (err, data) => {
-			if (err) reject(err);
-			else {
-				let all = JSON.parse(data);
+		axios.get(`https://dulldesk.github.io/words/${type}/${letter}-min.json`)
+			.then(response => {
+				let all = response.data;
 				resolve(all[Math.floor(Math.random()*all.length)]);
-			}
-		});
+			})
+			.catch(err => {
+				reject(err);
+			});
 	});
 }
-
 
