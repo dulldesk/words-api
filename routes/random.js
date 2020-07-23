@@ -3,51 +3,50 @@ const fs = require('fs');
 
 const toChar = chr => chr.charCodeAt(0);
 
-exports.genType = async function(req, res) {
-	const type = req.params.type.toLowerCase();
-
-	if (type != 'noun' && type != 'animal' && type != 'adjective') {
-		res.send("Invalid word type requested");
-		return;
-	}
-
+exports.genType = function(req, res) {
 	const letter = String.fromCharCode(Math.floor(Math.random()*26) + toChar('a'));
-
-	await getWordStartingWith(letter, `${type}s`)
-		.then(word => res.send([word]))
-		.catch(err => res.send("An error occured "+err));
+	genWord(req, res, letter);
 };
 
-exports.genLetterOfType = async function(req, res) {
+exports.genLetterOfType = function(req, res) {
+	genWord(req, res);
+};
+
+async function genWord(req, res, letter) {
 	const type = req.params.type.toLowerCase();
-	const letter = req.params.letter.toLowerCase();
+	letter = letter || req.params.letter.toLowerCase();
+	const cnt = req.query.count || 1;
 
-	if (toChar(letter) < toChar('a') || toChar(letter) > toChar('z')) {
-		res.send("Invalid letter requested");
+	try {
+		if (toChar(letter) < toChar('a') || toChar(letter) > toChar('z'))
+			throw "letter";
+		else if (type != 'noun' && type != 'animal' && type != 'adjective')
+			throw "word form";
+		else if (cnt < 1) 
+			throw "number of words";
+	} catch (err) {
+		res.send([`Invalid ${err} requested`]);
 		return;
 	}
-	else if (type != 'noun' && type != 'animal' && type != 'adjective') {
-		res.send("Invalid word type requested");
-		return;
-	}
 
-	await getWordStartingWith(letter, `${type}s`)
-		.then(word => res.send([word]))
-		.catch(err => res.send("An error occured "+err));
-};
+	await getWordStartingWith(letter, `${type}s`, cnt)
+		.then(word => res.send(word))
+		.catch(err => res.send(["An error occured"]));
+}
 
 const axios = require('axios');
 
-async function getWordStartingWith(letter, type) {
+async function getWordStartingWith(letter, type, cnt=1) {
 	return new Promise((resolve, reject) => {
 		axios.get(`https://dulldesk.github.io/words/${type}/${letter}-min.json`)
 			.then(response => {
 				let all = response.data;
-				resolve(all[Math.floor(Math.random()*all.length)]);
+				// cnt = Math.min(all.length, cnt);
+				let ans = new Array(cnt);
+				for (let i=0;i<cnt;i++) ans[i] = all[Math.floor(Math.random()*all.length)];
+				resolve(ans);
 			})
-			.catch(err => {
-				reject(err);
-			});
+			.catch(err => reject(err));
 	});
 }
 
