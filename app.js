@@ -7,10 +7,8 @@ app.use(cors());
 const indexRouter = require('./routes/index');
 const randomRouter = require("./routes/random");
 
+app.use('/random/:type', randomRouter);
 app.use('/', indexRouter);
-
-app.get("/random/:type", randomRouter.genType);
-app.get("/random/:type/:letter", randomRouter.genLetterOfType);
 
 app.use(function (req, res, next) {
 	res.sendStatus(404);

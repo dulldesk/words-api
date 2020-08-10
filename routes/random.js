@@ -3,15 +3,16 @@ const axios = require('axios');
 //const fs = require('fs')
 
 const toChar = chr => chr.charCodeAt(0);
+const router = express.Router({mergeParams: true});
 
-exports.genType = function(req, res) {
+router.get("/", (req, res) => {
 	const letter = String.fromCharCode(Math.floor(Math.random()*26) + toChar('a'));
 	genWord(req, res, letter);
-};
+});
 
-exports.genLetterOfType = function(req, res) {
+router.get("/:letter", (req, res) => {
 	genWord(req, res);
-};
+});
 
 async function genWord(req, res, letter=undefined) {
 	const type = req.params.type.toLowerCase();
@@ -49,3 +50,4 @@ async function getWordStartingWith(letter, type, cnt=1) {
 	});
 }
 
+module.exports = router;
