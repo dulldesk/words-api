@@ -1,5 +1,6 @@
 const express = require('express');
-const fs = require('fs');
+const axios = require('axios');
+//const fs = require('fs')
 
 const toChar = chr => chr.charCodeAt(0);
 
@@ -12,7 +13,7 @@ exports.genLetterOfType = function(req, res) {
 	genWord(req, res);
 };
 
-async function genWord(req, res, letter) {
+async function genWord(req, res, letter=undefined) {
 	const type = req.params.type.toLowerCase();
 	letter = letter || req.params.letter.toLowerCase();
 	const cnt = req.query.count || 1;
@@ -34,16 +35,14 @@ async function genWord(req, res, letter) {
 		.catch(err => res.sendStatus(500));
 }
 
-const axios = require('axios');
-
 async function getWordStartingWith(letter, type, cnt=1) {
 	return new Promise((resolve, reject) => {
 		axios.get(`https://dulldesk.github.io/words/${type}/${letter}-min.json`)
 			.then(response => {
-				let all = response.data;
-				// cnt = Math.min(all.length, cnt);
+				let allwords = response.data;
+				// cnt = Math.min(allwords.length, cnt);
 				let ans = new Array(cnt);
-				for (let i=0;i<cnt;i++) ans[i] = all[Math.floor(Math.random()*all.length)];
+				for (let i=0;i<cnt;i++) ans[i] = allwords[Math.floor(Math.random()*allwords.length)];
 				resolve(ans);
 			})
 			.catch(err => reject(err));
