@@ -19,19 +19,19 @@ async function genWord(req, res, letter) {
 
 	try {
 		if (toChar(letter) < toChar('a') || toChar(letter) > toChar('z'))
-			throw "letter";
+			throw "invalid letter";
 		else if (type != 'noun' && type != 'animal' && type != 'adjective')
-			throw "word form";
+			throw "invalid word form";
 		else if (cnt < 1) 
-			throw "number of words";
+			throw "invalid number of words";
 	} catch (err) {
-		res.send([`Invalid ${err} requested`]);
+		res.sendStatus(404);
 		return;
 	}
 
 	await getWordStartingWith(letter, `${type}s`, cnt)
 		.then(word => res.send(word))
-		.catch(err => res.send(["An error occured"]));
+		.catch(err => res.sendStatus(500));
 }
 
 const axios = require('axios');

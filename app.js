@@ -13,11 +13,11 @@ app.get("/random/:type", randomRouter.genType);
 app.get("/random/:type/:letter", randomRouter.genLetterOfType);
 
 app.use(function (req, res, next) {
-	res.status(404).send("404 not found");
+	res.sendStatus(404);
 });
 
 app.use(function (err, req, res, next) {
-	if (err) res.status(500).send('500 server error');
+	if (err) res.sendStatus(500);
 });
 
 module.exports = app;
