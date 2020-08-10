@@ -17,9 +17,4 @@ To get a certain number of words, append <code>?count=N</code> to the above urls
 
 Sample call: `/random/noun/a?count=3`
 
-## Cloning
-`git clone --recursive https://github.com/dulldesk/words-api.git`
-
-The data submodule can be updated via `git submodule update --remote`
-
 While functional, the site is a work in progress.
