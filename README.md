@@ -20,3 +20,5 @@ To get a certain number of words, append <code>?count=N</code> to the above urls
 Sample calls: [`/random/noun/a?count=3`](https://random-word-form.herokuapp.com/random/noun/a?count=3), [`/random/noun?count=5`](https://random-word-form.herokuapp.com/random/noun?count=5)
 
 While functional, the site is a work in progress.
+
+Written in Node.js with the Express.js library.
