@@ -1,7 +1,7 @@
 # words-api
-A random word generator. Generates a random noun, adjective, or animal via a GET request.
+A random word form generator. Generates a random noun, adjective, or animal via a GET request.
 
-Inspired by [https://random-word-api.herokuapp.com](https://random-word-api.herokuapp.com/home/)
+Inspired by [https://random-word-api.herokuapp.com](https://random-word-api.herokuapp.com/home/), a random word generator. 
 
 ## Usage
 Send a GET request to the following to generate a random...
