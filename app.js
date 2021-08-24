@@ -10,6 +10,9 @@ const randomRouter = require("./routes/random");
 app.use('/random/:type', randomRouter);
 app.use('/', indexRouter);
 
+app.set("view engine", "pug");
+app.set("views", path.join(__dirname, "public"));
+
 app.use(function (req, res, next) {
 	res.sendStatus(404);
 });
