@@ -7,7 +7,11 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/home', (req, res) => {
-  res.render('home');
+  const context = {
+    message:'You are in the home page',
+    from:'user'}
+
+  res.render('home', context);
 });
 
 module.exports = router;
