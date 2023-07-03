@@ -1,13 +1,15 @@
 const express = require('express');
-const axios = require('axios');
-//const fs = require('fs')
+const Axios = require('axios');
+const { setupCache } = require('axios-cache-interceptor');
+const axios = setupCache(Axios);
 
 const toChar = chr => chr.charCodeAt(0);
 const router = express.Router({mergeParams: true});
 
+const MAX_COUNT = 15001
+
 router.get("/", (req, res) => {
-	const letter = String.fromCharCode(Math.floor(Math.random()*26) + toChar('a'));
-	genWord(req, res, letter);
+	genWord(req, res);
 });
 
 router.get("/:letter", (req, res) => {
@@ -16,23 +18,30 @@ router.get("/:letter", (req, res) => {
 
 async function genWord(req, res, letter=undefined) {
 	const type = req.params.type.toLowerCase();
-	letter = letter || req.params.letter.toLowerCase();
-	const cnt = req.query.count || 1;
+	letter = req.params.letter ? req.params.letter.toLowerCase() : '?';
+	const cnt = parseInt(req.query.count) || 1;
+	const letter_is_given = !!req.params.letter
 
 	try {
-		if (toChar(letter) < toChar('a') || toChar(letter) > toChar('z'))
-			throw "invalid letter";
-		else if (type != 'noun' && type != 'animal' && type != 'adjective')
+		if (type != 'noun' && type != 'animal' && type != 'adjective')
 			throw "invalid word form";
-		else if (cnt < 1) 
+		else if (isNaN(cnt) || cnt < 1)
 			throw "invalid number of words";
 	} catch (err) {
 		res.sendStatus(404);
 		return;
 	}
+	if (cnt > MAX_COUNT) {
+		res.sendStatus(429)
+		return
+	}
 
-	await getWordStartingWith(letter, `${type}s`, cnt)
-		.then(word => res.send(word))
+	if (!letter_is_given && cnt > 1) {
+		await genRandomLetterType(res, `${type}s`, cnt)
+		return
+	}
+	getWordStartingWith(letter, `${type}s`, cnt)
+		.then(words => res.send(words))
 		.catch(err => res.sendStatus(500));
 }
 
@@ -48,6 +57,22 @@ async function getWordStartingWith(letter, type, cnt=1) {
 			})
 			.catch(err => reject(err));
 	});
+}
+
+async function genRandomLetterType(res, type, total) {
+	try {
+		res.type('json')
+		res.write("[")
+		for (let i=0;i<total;i++) {
+			let ltr = String.fromCharCode(Math.floor(Math.random()*26) + toChar('a'))
+			let wrd = await getWordStartingWith(ltr, type, 1)
+			res.write(`"${wrd}"${i === total - 1 ? '' : ','}`)
+		}
+		res.write("]")
+		res.end()
+	} catch (e) {
+		res.sendStatus(500)
+	}
 }
 
 module.exports = router;

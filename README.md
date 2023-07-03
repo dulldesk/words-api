@@ -15,7 +15,7 @@ To generate a word starting with a specific letter, append `/letter` to the abov
 
 Sample call: [`/random/noun/a`](https://random-word-form.herokuapp.com/random/noun/a)
 
-To get a certain number of words, append <code>?count=N</code> to the above urls.
+To get a certain number of words, append <code>?count=N</code> to the above urls. A maximum of 15000 words can be requested.
 
 Sample calls: [`/random/noun/a?count=3`](https://random-word-form.herokuapp.com/random/noun/a?count=3), [`/random/noun?count=5`](https://random-word-form.herokuapp.com/random/noun?count=5)
 
