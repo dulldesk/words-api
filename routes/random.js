@@ -4,6 +4,7 @@ const { setupCache } = require('axios-cache-interceptor');
 const axios = setupCache(Axios);
 
 const toChar = chr => chr.charCodeAt(0);
+const getLetter = () => String.fromCharCode(Math.floor(Math.random()*26) + toChar('a'))
 const router = express.Router({mergeParams: true});
 
 const MAX_COUNT = 15001
@@ -13,14 +14,13 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:letter", (req, res) => {
-	genWord(req, res);
+	genWord(req, res, req.params.letter.toLowerCase());
 });
 
 async function genWord(req, res, letter=undefined) {
 	const type = req.params.type.toLowerCase();
-	letter = req.params.letter ? req.params.letter.toLowerCase() : '?';
 	const cnt = parseInt(req.query.count) || 1;
-	const letter_is_given = !!req.params.letter
+	const letter_is_given = !!letter
 
 	try {
 		if (type != 'noun' && type != 'animal' && type != 'adjective')
@@ -46,6 +46,7 @@ async function genWord(req, res, letter=undefined) {
 }
 
 async function getWordStartingWith(letter, type, cnt=1) {
+	if (letter === undefined || toChar(letter) < toChar('a') || toChar(letter) > toChar('z')) letter = getLetter()
 	return new Promise((resolve, reject) => {
 		axios.get(`https://dulldesk.github.io/words/${type}/${letter}-min.json`)
 			.then(response => {
@@ -64,7 +65,7 @@ async function genRandomLetterType(res, type, total) {
 		res.type('json')
 		res.write("[")
 		for (let i=0;i<total;i++) {
-			let ltr = String.fromCharCode(Math.floor(Math.random()*26) + toChar('a'))
+			let ltr = getLetter()
 			let wrd = await getWordStartingWith(ltr, type, 1)
 			res.write(`"${wrd}"${i === total - 1 ? '' : ','}`)
 		}
